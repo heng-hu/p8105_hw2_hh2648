@@ -1,0 +1,6 @@
+---
+title: "P8105 Data Science I - Homework 2"
+author: "Heng Hu (hh2648)"
+date: 2025-09-30
+output: github_document
+---
