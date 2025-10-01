@@ -16,6 +16,7 @@ library(readxl)
 ## Problem 1
 
 ```{r message = FALSE}
+
 # Input and clean pols-month.csv
 pols = read_csv(file = "./data/pols-month.csv") |> 
   separate(mon, c("year", "month", "day"), remove = FALSE) |> 
@@ -27,11 +28,13 @@ pols = read_csv(file = "./data/pols-month.csv") |>
   arrange(year, month)
 
 pols
+
 ```
 
 The dataset `pols` has ``r ncol(pols)`` variables and ``r nrow(pols)`` records related to the number of national politicians who are democratic or republican. The dataset covers the period from ``r pols[1, "month"]``, ``r pols[1, "year"]`` to ``r pols[nrow(pols), "month"]``, ``r pols[nrow(pols), "year"]``. Variables `year` and `month` represent the time period, while `president` indicates the political party of the president during that time.
 
 ```{r message = FALSE}
+
 # Input and clean snp.csv
 snp = read_csv(file = "./data/snp.csv") |> 
   mutate(date = as.Date(date, format = "%m/%d/%y"),
@@ -42,11 +45,13 @@ snp = read_csv(file = "./data/snp.csv") |>
   arrange(year, month)
 
 snp
+
 ```
 
 The dataset `snp` has ``r ncol(snp)`` variables and ``r nrow(snp)`` records related to Standard & Poor’s stock market index (S&P). The dataset covers the period from ``r snp[1, "month"]``, ``r snp[1, "year"]`` to ``r snp[nrow(snp), "month"]``, ``r snp[nrow(snp), "year"]``. Variables `year` and `month` represent the time period, while `close` indicates the closing values of the S&P stock index on the associated date.
 
 ```{r message = FALSE}
+
 # Input and clean unemployment.csv
 unemployment = read_csv(file = "./data/unemployment.csv") |> 
   pivot_longer(cols = (-Year),
@@ -60,21 +65,23 @@ unemployment = read_csv(file = "./data/unemployment.csv") |>
   arrange(year, month)
 
 unemployment
+
 ```
 
 The dataset `unemployment` has ``r ncol(unemployment)`` variables and ``r nrow(unemployment)`` observations recording the unemployment rate. The dataset covers the period from ``r unemployment[1, "month"]``, ``r unemployment[1, "year"]`` to ``r unemployment[nrow(unemployment), "month"]``, ``r unemployment[nrow(unemployment), "year"]``. Variables `year` and `month` represent the time period, while `ue_rate` indicates the unemployment rate during that time.
 
 ```{r message = FALSE}
+
 # Join the 3 datasets 
 full_dt = pols |> 
   left_join(snp, by = c("year", "month")) |> 
   left_join(unemployment, by = c("year", "month"))
 
 full_dt
+
 ```
 
 Since the merged data may be used to analyze the political influence on national-level economic conditions, I applied `left_join` to retain all the observations from the `pols` dataset when merging these 3 datasets. The merged dataset is called `full_dt`. It contains ``r nrow(full_dt)`` observations of ``r ncol(full_dt)`` variables, and covers the period from ``r full_dt[1, "month"]``, ``r full_dt[1, "year"]`` to ``r full_dt[nrow(full_dt), "month"]``, ``r full_dt[nrow(full_dt), "year"]``. Like the previous datasets, variables `year` and `month` represent the time period. `president`, `close`, and `ue_rate` indicate, respectively, the political party of the president, the closing values of the S&P stock index, and unemployment rate during that time.
-
 
 
 ## Problem 2
@@ -122,10 +129,92 @@ gwynns_trash
 three_trash_wheel = bind_rows(mr_trash, prof_trash, gwynns_trash)
 
 three_trash_wheel
+
 ```
 
-The dataset `mr_trash` has ``r ncol(mr_trash)`` variables and ``r nrow(mr_trash)`` records, with a time span ranging from ``r mr_trash[1, "month"]``, ``r mr_trash[1, "year"]`` to ``r mr_trash[nrow(mr_trash), "month"]``, ``r mr_trash[nrow(mr_trash), "year"]``. The dataset `prof_trash` has ``r ncol(prof_trash)`` variables and ``r nrow(prof_trash)`` records, with a time span ranging from ``r prof_trash[1, "month"]``, ``r prof_trash[1, "year"]`` to ``r prof_trash[nrow(prof_trash), "month"]``, ``r prof_trash[nrow(prof_trash), "year"]``. The dataset `gwynns_trash` has ``r ncol(gwynns_trash)`` variables and ``r nrow(gwynns_trash)`` records, with a time span ranging from ``r gwynns_trash[1, "month"]``, ``r gwynns_trash[1, "year"]`` to ``r gwynns_trash[nrow(gwynns_trash), "month"]``, ``r gwynns_trash[nrow(gwynns_trash), "year"]``. All of them share some common variables listed here. The `wheel_name` indicate the name of trash wheel. `year`, `month`, and `date` represent the time period. `weight_tons` and `volume_cubic_yards` are the total weight and volume of trash that the trash wheel collected. `homes_powered` shows the number of homes powered by the energy generated from burning collected trash. Other variables like ``r  names(three_trash_wheel |> select(plastic_bottles:sports_balls))`` show the count numbers of different types of trash. However, not all of them are present in every dataset.
+The dataset `mr_trash` has ``r ncol(mr_trash)`` variables and ``r nrow(mr_trash)`` records, with a time span ranging from ``r mr_trash[1, "month"]``, ``r mr_trash[1, "year"]`` to ``r mr_trash[nrow(mr_trash), "month"]``, ``r mr_trash[nrow(mr_trash), "year"]``. The dataset `prof_trash` has ``r ncol(prof_trash)`` variables and ``r nrow(prof_trash)`` records, with a time span ranging from ``r prof_trash[1, "month"]``, ``r prof_trash[1, "year"]`` to ``r prof_trash[nrow(prof_trash), "month"]``, ``r prof_trash[nrow(prof_trash), "year"]``. The dataset `gwynns_trash` has ``r ncol(gwynns_trash)`` variables and ``r nrow(gwynns_trash)`` records, with a time span ranging from ``r gwynns_trash[1, "month"]``, ``r gwynns_trash[1, "year"]`` to ``r gwynns_trash[nrow(gwynns_trash), "month"]``, ``r gwynns_trash[nrow(gwynns_trash), "year"]``. All of them share some common variables listed here. The `wheel_name` indicate the name of trash wheel. `year`, `month`, and `date` represent the time period. `weight_tons` and `volume_cubic_yards` are the total weight and volume of trash that the trash wheel collected. `homes_powered` shows the number of homes powered by the energy generated from burning collected trash. Other variables like ``r names(three_trash_wheel |> select(plastic_bottles:sports_balls))`` show the count numbers of different types of trash. However, not all of them are present in every dataset.
 
 The combined dataset `three_trash_wheel` has ``r ncol(three_trash_wheel)`` variables and ``r nrow(three_trash_wheel)`` records. It contains data collected from ``r unique(three_trash_wheel$wheel_name)`` and all the variables listed in previous paragraph.
 
 Based on the current data, the total weight of trash collected by Professor Trash Wheel is ``r sum(prof_trash |> select(weight_tons))`` tons. The total number of cigarette butts collected by Gwynnda in June of 2022 was ``r sprintf("%d", sum(gwynns_trash |> filter(year == 2022 & month == "June") |> select(cigarette_butts)))``.
+
+
+## Problem 3
+
+```{r message = FALSE}
+
+# Read and clean data
+rent = read_csv("./data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") |> 
+  pivot_longer(cols = (starts_with("20")),
+               names_to = "rent_date",
+               values_to = "rent_price") |> 
+  janitor::clean_names() |> 
+  filter(!is.na(rent_price)) |> 
+  rename(zip_code = region_name) |> 
+  separate(rent_date, c(paste0("rent_", c("year", "month", "day"))), remove = FALSE) |> 
+  mutate(county = trimws(gsub("County", "", county_name)),
+         rent_year = as.integer(rent_year),
+         rent_month = as.integer(rent_month),
+         rent_day = as.integer(rent_day)) |> 
+  select(-county_name)
+
+zip = read_csv("./data/Zip Codes.csv") |> 
+  janitor::clean_names() |> 
+  rename(zip_file_date = file_date)
+
+# Merge two datasets and tidy
+full_rent = rent |> 
+  left_join(zip, by = c("zip_code", "county")) |> 
+  select(region_id, size_rank, region_type, zip_code, zip_file_date, state_name, state, state_fips, city, metro, county, county_code, county_fips, neighborhood, everything()) |> 
+  arrange()
+
+full_rent
+
+```
+
+The dataset `full_rent` has ``r ncol(full_rent)`` variables and ``r nrow(full_rent)`` observations. It contains rental prices in New York City from ``r paste(full_rent[1, "rent_year"], full_rent[1, "rent_month"], sep = "/")`` to ``r paste(full_rent[nrow(full_rent), "rent_year"], full_rent[nrow(full_rent), "rent_month"], sep = "/")``. It contains ``r length((unique(full_rent$zip_code)))`` unique ZIP codes and ``r length((unique(full_rent$neighborhoods)))`` unique neighborhoods.
+
+```{r}
+
+# Find ZIP code not listed in full_rent
+zip_w_rent = full_rent |> 
+  select(zip_code)
+
+zip_wo_rent = zip |> 
+  anti_join(zip_w_rent, by = "zip_code")
+
+zip_wo_rent
+
+zip_wo_rent |> 
+  select(neighborhood) |> 
+  table(useNA = c("always")) |> 
+  sort(decreasing = TRUE)
+
+```
+The dataset `zip_wo_rent` was created to include all the ZIP codes without any rental observations. After examining `neighborhood` count numbers in this dataset, we found most of them don't have associated `neighborhood` information, suggesting they may be reserved for future data expansion.
+
+```{r}
+
+# Compare rental prices in January 2021 to prices in January 2020
+rent_drop = full_rent |> 
+  filter(rent_year %in% c(2020, 2021) & rent_month ==  1) |> 
+  pivot_wider(id_cols = c(zip_code, county, neighborhood),
+              names_from = rent_year,
+              values_from = rent_price,
+              names_prefix = "rent_") |> 
+  mutate(rent_drop = rent_2020 - rent_2021) |> 
+  filter(!is.na(rent_drop)) |> 
+  arrange(desc(rent_2020)) |> 
+  mutate(rent_rank = row_number()) |> 
+  arrange(desc(rent_drop))
+
+rent_drop_10 = rent_drop |>
+  head(10)
+
+rent_drop_10
+
+```
+
+The dataset `rent_drop` was create to compare rental prices in January 2021 to prices in January 2020 for all available ZIP code. It contains ``r nrow(rent_drop)`` records with valid rental price difference between the two time points. The variable `rent_drop` stores the calculated difference, while `rent_rank` represents the rank of rental prices in January 2020.
+
+The dataset `rent_drop_10` lists the 10 ZIP codes with largest drop in price from January 2020 to 2021. All of them are from ``r unique(rent_drop_10$county)`` County. Most of them also ranked among the top rental prices in January 2020 base on `rent_rank`.
