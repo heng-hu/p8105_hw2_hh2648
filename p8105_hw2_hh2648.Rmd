@@ -4,3 +4,72 @@ author: "Heng Hu (hh2648)"
 date: 2025-09-30
 output: github_document
 ---
+
+Load packages
+
+```{r message = FALSE}
+library(tidyverse)
+```
+
+
+## Problem 1
+
+```{r message = FALSE}
+# Input and clean pols-month.csv
+pols = read_csv(file = "./data/pols-month.csv") |> 
+  separate(mon, c("year", "month", "day"), remove = FALSE) |> 
+  mutate(year = as.numeric(year),
+         month = month(mon, label = TRUE, abbr = FALSE),
+         president = ifelse(prez_gop == 1, "rep", "dem")) |> 
+  select(-c(mon, day, prez_gop, prez_dem)) |> 
+  select(year, month, president, everything()) |> 
+  arrange(year, month)
+
+pols
+```
+
+The dataset `pols` has ``r ncol(pols)`` variables and ``r nrow(pols)`` records related to the number of national politicians who are democratic or republican. The dataset covers the period from ``r pols[1, "month"]``, ``r pols[1, "year"]`` to ``r pols[nrow(pols), "month"]``, ``r pols[nrow(pols), "year"]``. Variables `year` and `month` represent the time period, while `president` indicates the political party of the president during that time.
+
+```{r message = FALSE}
+# Input and clean snp.csv
+snp = read_csv(file = "./data/snp.csv") |> 
+  mutate(date = as.Date(date, format = "%m/%d/%y"),
+         year = year(date),
+         year = ifelse(year > 2025, year-100, year),
+         month = month(date, label = TRUE, abbr = FALSE)) |> 
+  select(year, month, close) |> 
+  arrange(year, month)
+
+snp
+```
+
+The dataset `snp` has ``r ncol(snp)`` variables and ``r nrow(snp)`` records related to Standard & Poor’s stock market index (S&P). The dataset covers the period from ``r snp[1, "month"]``, ``r snp[1, "year"]`` to ``r snp[nrow(snp), "month"]``, ``r snp[nrow(snp), "year"]``. Variables `year` and `month` represent the time period, while `close` indicates the closing values of the S&P stock index on the associated date.
+
+```{r message = FALSE}
+# Input and clean unemployment.csv
+unemployment = read_csv(file = "./data/unemployment.csv") |> 
+  pivot_longer(cols = (-Year),
+               names_to = "month_abb",
+               values_to = "ue_rate") |> 
+  mutate(year = Year,
+         month = match(month_abb, month.abb),
+         yr_mon = as.Date(paste(year, month, "01", sep = "-")),
+         month = month(yr_mon, label = TRUE, abbr = FALSE)) |> 
+  select(year, month, ue_rate) |> 
+  arrange(year, month)
+
+unemployment
+```
+
+The dataset `unemployment` has ``r ncol(unemployment)`` variables and ``r nrow(unemployment)`` observations recording the unemployment rate. The dataset covers the period from ``r unemployment[1, "month"]``, ``r unemployment[1, "year"]`` to ``r unemployment[nrow(unemployment), "month"]``, ``r unemployment[nrow(unemployment), "year"]``. Variables `year` and `month` represent the time period, while `ue_rate` indicates the unemployment rate during that time.
+
+```{r message = FALSE}
+# Join the 3 datasets 
+full_dt = pols |> 
+  left_join(snp, by = c("year", "month")) |> 
+  left_join(unemployment, by = c("year", "month"))
+
+full_dt
+```
+
+Since the merged data may be used to analyze the political influence on national-level economic conditions, I applied `left_join` to retain all the observations from the `pols` dataset when merging these 3 datasets. The merged dataset is called `full_dt`. It contains ``r nrow(full_dt)`` observations of ``r ncol(full_dt)`` variables, and covers the period from ``r full_dt[1, "month"]``, ``r full_dt[1, "year"]`` to ``r full_dt[nrow(full_dt), "month"]``, ``r full_dt[nrow(full_dt), "year"]``. Like the previous datasets, variables `year` and `month` represent the time period. `president`, `close`, and `ue_rate` indicate, respectively, the political party of the president, the closing values of the S&P stock index, and unemployment rate during that time.
